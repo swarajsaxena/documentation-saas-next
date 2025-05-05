@@ -1,8 +1,10 @@
-import TopBar from "@/components/dashboard/layout/top-bar";
-import React, { ReactNode } from "react";
+"use client";
+
+import AuthLayout from "@/components/dashboard/layout/auth-layout";
+import { ReactNode } from "react";
 
 const layout = ({ children }: { children: ReactNode }) => {
-  return <TopBar>{children}</TopBar>;
+  return <AuthLayout>{children}</AuthLayout>;
 };
 
 export default layout;
