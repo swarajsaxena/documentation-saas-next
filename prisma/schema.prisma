@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../lib/generated/prisma"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["public"]
+}
+
+enum GrantRole {
+  WORKSPACE_OWNER
+  WORKSPACE_ADMIN
+  WORKSPACE_VIEWER
+  DOC_EDITOR
+  DOC_VIEWER
+
+  @@schema("public")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+
+  grants    Grant[]
+  Workspace Workspace[]
+
+  @@schema("public")
+}
+
+model Workspace {
+  id        Int    @id @default(autoincrement())
+  name      String
+  createdBy Int
+  creator   User   @relation(fields: [createdBy], references: [id])
+
+  documentations Documentation[]
+  grants         Grant[]
+
+  @@schema("public")
+}
+
+model Documentation {
+  id          Int       @id @default(autoincrement())
+  title       String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId Int
+
+  grants Grant[]
+  // routes    DocRoute[]
+  // versions  Version[]
+  // analytics DocAnalytics[]
+
+  @@schema("public")
+}
+
+model Grant {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+  workspaceId Int?
+
+  documentation Documentation? @relation(fields: [docSetId], references: [id])
+  docSetId      Int?
+
+  role      GrantRole
+  grantedAt DateTime  @default(now())
+
+  @@schema("public")
+}
+
+// model DocRoute {
+//   id               Int           @id @default(autoincrement())
+//   documentationSet Documentation @relation(fields: [docSetId], references: [id])
+//   docSetId         Int
+//   parentId         Int? // for nesting up to 1 level
+//   parent           DocRoute?     @relation("ParentRoute", fields: [parentId], references: [id])
+//   children         DocRoute[]    @relation("ParentRoute")
+
+//   title    String
+//   slug     String
+//   order    Int
+//   elements RouteElement[]
+
+//   @@schema("public")
+// }
+
+// model RouteElement {
+//   id       Int      @id @default(autoincrement())
+//   docRoute DocRoute @relation(fields: [routeId], references: [id])
+//   routeId  Int
+//   type     String // e.g. "header", "text", "image", "code", etc.
+//   content  Json // structure varies by type
+//   order    Int
+
+//   @@schema("public")
+// }
+
+// model Version {
+//   id               Int           @id @default(autoincrement())
+//   documentationSet Documentation @relation(fields: [docSetId], references: [id])
+//   docSetId         Int
+//   name             String
+//   environment      String // e.g. "production", "staging"
+//   isActive         Boolean       @default(false)
+//   createdAt        DateTime      @default(now())
+//   autoSaved        Boolean       @default(false)
+
+//   @@schema("public")
+// }
+
+// model DocAnalytics {
+//   id               Int           @id @default(autoincrement())
+//   documentationSet Documentation @relation(fields: [docSetId], references: [id])
+//   docSetId         Int
+
+//   pageSlug     String
+//   views        Int       @default(0)
+//   likes        Int       @default(0)
+//   dislikes     Int       @default(0)
+//   lastViewedAt DateTime?
+
+//   @@schema("public")
+// }
+
+// model Theme {
+//   id        Int     @id @default(autoincrement())
+//   name      String
+//   isDefault Boolean @default(false)
+//   tokens    Json
+
+//   @@schema("public")
+// }
