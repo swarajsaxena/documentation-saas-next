@@ -1,16 +1,18 @@
-import { Button } from "@/components/ui/button";
-import { signOutAction } from "@/utils/supabase/actions";
-import { createClientOnServer } from "@/utils/supabase/server";
+"use client";
 
-const Dashboard = async () => {
-  const supabase = await createClientOnServer();
-  const { data, error } = await supabase.auth.getUser();
-  return (
-    <div>
-      <p className="">Hello {data?.user?.email ?? "User"}</p>
-      {/* <Button onClick={signOutAction}>Logout</Button> */}
-    </div>
-  );
+import { api } from "@/convex/_generated/api";
+import useCustomQuery from "@/hooks/use-custom-query";
+import { ROUTES } from "@/lib/constants";
+import { redirect } from "next/navigation";
+
+const Dashboard = () => {
+  const { data, isLoading } = useCustomQuery(api.workspaces.getWorkspaces);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return redirect(ROUTES.workspaces + "/" + data[0]._id);
 };
 
 export default Dashboard;

@@ -1,24 +1,27 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  images: {
+    domains: ['img.clerk.com'],
+  },
   async rewrites() {
     return {
       beforeFiles: [
         {
-          source: "/:path*",
+          source: '/:path*',
           has: [
-            { type: "host", value: "(?<slug>.+)\\.domain\\.com" },
-            { type: "host", value: "(?<slug>[^.]+)\\.localhost(?::[0-9]+)?" },
+            { type: 'host', value: '(?<slug>.+)\\.domain\\.com' },
+            { type: 'host', value: '(?<slug>[^.]+)\\.localhost(?::[0-9]+)?' },
           ],
-          destination: "/_tenant/:slug/:path*",
+          destination: '/_tenant/:slug/:path*',
         },
         {
-          source: "/dashboard/:path*",
+          source: '/dashboard/:path*',
           destination: `/dashboard/:path*`,
         },
       ],
-    };
+    }
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

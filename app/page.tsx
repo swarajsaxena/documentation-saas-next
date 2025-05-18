@@ -1,22 +1,19 @@
-"use client";
+import { ROUTES } from '@/lib/constants'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import Link from 'next/link'
 
-import useAuth from "@/hooks/use-auth";
-import { ROUTES } from "@/lib/constants";
-import { SignInButton, UserButton } from "@clerk/nextjs";
-import { Authenticated, Unauthenticated } from "convex/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
-export default function Home() {
-  const { isSignedIn, user } = useAuth();
-
+const page = () => {
   return (
-    <>
-      <Unauthenticated>
+    <div>
+      <SignedOut>
         <SignInButton />
-      </Unauthenticated>
-      {isSignedIn && user && <Link href={ROUTES["workspaces"]}>Dashboard</Link>}
-    </>
-  );
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+        <Link href={ROUTES.dashboard}>Dashboard</Link>
+      </SignedIn>
+    </div>
+  )
 }
+
+export default page
